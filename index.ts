@@ -9,19 +9,6 @@ interface electronicsData {
   apidata: Isproduct[];
 }
 
-//Fetches data from the external API.
-//Transforms it into the required format.
-
-function fetchAndATranformProducts(api: electronicsData): Isproduct[] {
-  const transformedProducts = api.apidata.map((product) => ({
-    ...product,
-    //Get the first product if is true
-    categories: product.categories[0] ? [product.categories[0]] : [],
-  }));
-
-  return transformedProducts;
-}
-
 const apiData: electronicsData = {
   apidata: [
     {
@@ -38,6 +25,19 @@ const apiData: electronicsData = {
     },
   ],
 };
+
+//Fetches data from the external API.
+//Transforms it into the required format.
+
+function fetchAndATranformProducts(api: electronicsData): Isproduct[] {
+  const transformedProducts = api.apidata.map((product) => ({
+    ...product,
+    //Get the first product if is true
+    categories: product.categories[0] ? [product.categories[0]] : [],
+  }));
+
+  return transformedProducts;
+}
 
 const transformedProducts = fetchAndATranformProducts(apiData);
 console.log(transformedProducts);
