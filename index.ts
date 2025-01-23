@@ -1,43 +1,65 @@
-interface Isproduct {
+//mock fuction to simulate an API call
+
+interface Product {
   id: string;
   product_name: string;
   price_usd: string;
   categories: string[];
 }
 
-interface electronicsData {
-  apidata: Isproduct[];
+interface apiReponse {
+  ok: boolean;
+  status: number;
+  json: () => Promise<{ data: Product[] }>; //json has access to pre-defined Products via : data: Product[]
 }
 
-const apiData: electronicsData = {
-  apidata: [
-    {
-      id: "123",
-      product_name: "Laptop",
-      price_usd: "999.99",
-      categories: ["electronics", "computers"],
-    },
-    {
-      id: "124",
-      product_name: "Smartphone",
-      price_usd: "799.99",
-      categories: ["electronics", "phones"],
-    },
-  ],
-};
+function fakeApiCall(url: string, option = {}): Promise<apiReponse> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const mockResponseData = {
+        data: [
+          {
+            id: "123",
+            product_name: "Laptop",
+            price_usd: "999.99",
+            categories: ["electronics", "computers"],
+          },
+          {
+            id: "124",
+            product_name: "Smartphone",
+            price_usd: "799.99",
+            categories: ["electronics", "phones"],
+          },
+        ],
+      };
 
-//Fetches data from the external API.
-//Transforms it into the required format.
+      resolve({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve(mockResponseData),
+      });
+    }, 1000);
+  });
+}
 
-function fetchAndATranformProducts(api: electronicsData): Isproduct[] {
-  const transformedProducts = api.apidata.map((product) => ({
-    ...product,
-    //Get the first product if is true
-    categories: product.categories[0] ? [product.categories[0]] : [],
+async function fetchData() {
+  const url = "https//api.example.com/items"; // Mock URL
+
+  const response = await fakeApiCall(url);
+  if (response.ok) {
+    const responseData = await response.json();
+
+    return responseData.data;
+  }
+
+  throw new Error("Failed to fetch data");
+}
+
+fetchData().then((res) => {
+  const transformedData = res.map((products) => ({
+    ...products,
+    categories: products.categories[0] ? products.categories[0] : [],
   }));
 
-  return transformedProducts;
-}
-
-const transformedProducts = fetchAndATranformProducts(apiData);
-console.log(transformedProducts);
+  console.log(transformedData);
+});
